@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"mcp": {
+			"servers": {
+				"next-devtools": {
+					"type": "stdio",
+					"command": "npx",
+					"args": [
+						"-y",
+						"next-devtools-mcp@latest"
+					]
+				}
+			},
+			"inputs": []
+		}
+	}
+}
