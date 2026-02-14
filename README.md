@@ -20,6 +20,25 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## DOCX templates
+
+This project uses [`docx-templates`](https://www.npmjs.com/package/docx-templates) to generate Word documents on the server.
+
+1. Add your template file to `src/templates/berita-acara.docx` (or another filename).
+2. Send a POST request to `/api/docx` with JSON payload:
+
+```json
+{
+	"template": "berita-acara.docx",
+	"data": {
+		"title": "Contoh Berita Acara",
+		"tanggal": "2026-02-13"
+	}
+}
+```
+
+The response is a `.docx` file download. If you omit `template`, the default is `berita-acara.docx`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

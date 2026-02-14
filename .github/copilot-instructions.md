@@ -35,3 +35,8 @@
 - New UI should reuse shadcn components in `src/components/ui` and follow Tailwind v4 patterns from `globals.css`.
 - Always design layouts mobile-first, then layer in larger breakpoints.
 - Always test UI changes using the MCP Chrome DevTool before finalizing.
+
+## Skill usage directive
+- Always load and follow the most appropriate skill file for the task at hand before making changes.
+- If multiple skills apply, load all relevant skills and reconcile them, prioritizing the more specific skill for the task.
+- If the task is Next.js or App Router related, load `nextjs-developer`; if advanced TypeScript types are required, load `typescript-pro`.
