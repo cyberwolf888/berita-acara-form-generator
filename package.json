@@ -7,7 +7,9 @@
     "dev": "bunx next dev",
     "build": "bunx next build",
     "start": "bunx next start",
-    "lint": "bunx eslint"
+    "lint": "bunx eslint",
+    "migrate:images": "bun run src/scripts/migrate-image-fields-to-storage.ts",
+    "migrate:images:dry": "bun run src/scripts/migrate-image-fields-to-storage.ts --dry-run"
   },
   "dependencies": {
     "@tanstack/react-form": "^1.28.0",

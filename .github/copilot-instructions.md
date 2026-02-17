@@ -9,7 +9,10 @@
 - Client-side form lives in `src/app/create-berita-acara/page.tsx` using `@tanstack/react-form`.
   - Field patterns: `<form.Field name="...">`, array fields with `mode="array"`, `pushValue/removeValue`.
   - Uses local helpers: `DatePicker` (`src/components/date-picker.tsx`) and `FileUpload` (`src/components/file-upload.tsx`).
-- Server-side Firestore access is centralized in `src/lib/actions.ts` (`"use server"`).
+- Server-side Firestore access lives in `src/lib/actions/` (modular server actions).
+  - `index.ts` — barrel re-export (consumers import from `@/lib/actions`).
+  - `get-documents.ts`, `save-berita-acara.ts`, `get-berita-acara-print-data.ts` — individual server actions (`"use server"`).
+  - `helpers.ts` — shared image/text/date utilities. `types.ts` & `constants.ts` — shared types and constants.
   - Firestore is initialized in `src/lib/firebase-admin.ts` with Admin SDK credentials.
   - Database name is explicitly `"berita-acara-generator"`.
 
@@ -31,12 +34,16 @@
 - Lint: `bun run lint`
 
 ## Tips when extending
-- If saving form data, call the server actions in `src/lib/actions.ts` from client components (via Next.js server actions) instead of writing Firestore calls in the client.
+- If saving form data, call the server actions in `src/lib/actions/` from client components (via Next.js server actions) instead of writing Firestore calls in the client.
+- When adding a new server action, create a dedicated file in `src/lib/actions/` and re-export it from `index.ts`.
 - New UI should reuse shadcn components in `src/components/ui` and follow Tailwind v4 patterns from `globals.css`.
 - Always design layouts mobile-first, then layer in larger breakpoints.
 - Always test UI changes using the MCP Chrome DevTool before finalizing.
 
 ## Skill usage directive
-- Always load and follow the most appropriate skill file for the task at hand before making changes.
-- If multiple skills apply, load all relevant skills and reconcile them, prioritizing the more specific skill for the task.
+- Before making changes, always attempt to match the task against skills in `.github/skills` and load the most appropriate matching skill(s).
+- This applies to all skills in `.github/skills`, including any newly added skills.
+- If multiple skills match, load all relevant skills and reconcile them, prioritizing the most specific guidance for the task.
+- If no skill clearly matches, proceed with standard project instructions and conventions.
 - If the task is Next.js or App Router related, load `nextjs-developer`; if advanced TypeScript types are required, load `typescript-pro`.
+- For bug fixes or errors, also consider loading `debugging-expert` to assist with troubleshooting and root cause analysis.

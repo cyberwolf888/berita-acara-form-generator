@@ -27,7 +27,9 @@ export async function POST(request: Request) {
 
     const downloadName = sanitizeFileName(path.basename(fileName));
 
-    return new Response(buffer, {
+    const responseBody = Uint8Array.from(buffer).buffer;
+
+    return new Response(responseBody, {
       status: 200,
       headers: {
         "Content-Type":

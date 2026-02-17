@@ -1,0 +1,32 @@
+import { type FormData } from "./types";
+
+export const defaultValues: FormData = {
+  ba_date: undefined,
+  full_name: "",
+  no_license: "",
+  position: "",
+  full_name2: "",
+  nip: "",
+  position2: "",
+  desa: "",
+  kecamatan: "",
+  kabupaten: "",
+  provinsi: "",
+  no_berkas: "",
+  dasar_no_pengukuran: "",
+  dasar_tanggal: undefined,
+  dasar_full_name: "",
+  dasar_peta_pendaftaran: "",
+  dasar_gambar_ukur: "",
+  dasar_surat_ukur: "",
+  tempat_dibuat: "",
+  tanggal_dibuat: undefined,
+  gambar_denah_area: "",
+  pengukuran_dihadiri: [{ nama: "", foto: "" }],
+  batas_bidang_tanah: [{ jenis: "", foto: "", keterangan: "" }],
+  penggunaan_tanah: [{ no_hak: "", penggunaan: "" }],
+  tanah_terdampak: [
+    { nib: "", luas_sebelum: "", luas_sesudah: "", keterangan: "" },
+  ],
+  daftar_petugas: [{ nama: "", tipe_posisi: "", posisi: "", ttd: "" }],
+};
