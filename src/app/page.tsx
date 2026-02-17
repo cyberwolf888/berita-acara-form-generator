@@ -1,5 +1,7 @@
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 import ReportsTable, { type ReportRow } from "@/components/reports-table"
 import { Button } from "@/components/ui/button"
 import {
