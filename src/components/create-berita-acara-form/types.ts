@@ -1,11 +1,20 @@
 export type ImageUploadValue =
   | ""
   | {
-      kind: "new-upload";
-      dataUrl: string;
+      kind: "pending";
+      file: File;
+      previewUrl: string;
       fileName: string;
       mimeType: string;
       size: number;
+    }
+  | {
+      kind: "uploaded";
+      storagePath: string;
+      fileName: string;
+      mimeType: string;
+      size: number;
+      previewUrl?: string;
     };
 
 export interface PengukuranDihadiri {

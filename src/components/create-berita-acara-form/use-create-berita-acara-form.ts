@@ -7,7 +7,11 @@ import { toast } from "sonner";
 import { saveBeritaAcara } from "@/lib/actions";
 
 import { defaultValues } from "./constants";
-import { hasRequiredTopFields, serializeFormValues } from "./logic";
+import {
+  hasRequiredTopFields,
+  serializeFormValues,
+  uploadPendingImagesOnSubmit,
+} from "./logic";
 
 export function useCreateBeritaAcaraForm() {
   const router = useRouter();
@@ -16,11 +20,26 @@ export function useCreateBeritaAcaraForm() {
     defaultValues,
     onSubmit: async ({ value }) => {
       if (!hasRequiredTopFields(value)) {
-        toast.error("Tanggal BA dan Nama Lengkap wajib diisi.");
+        toast.error(
+          "Tanggal BA, Nama Lengkap, Tempat Dibuat, dan Tanggal Dibuat wajib diisi."
+        );
         return;
       }
 
-      const result = await saveBeritaAcara(serializeFormValues(value));
+      let preparedValue = value;
+
+      try {
+        preparedValue = await uploadPendingImagesOnSubmit(value);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Gagal mengunggah gambar.";
+        toast.error("Gagal mengunggah gambar.", {
+          description: message,
+        });
+        return;
+      }
+
+      const result = await saveBeritaAcara(serializeFormValues(preparedValue));
 
       if (result.success) {
         toast.success("Berita acara berhasil disimpan!");

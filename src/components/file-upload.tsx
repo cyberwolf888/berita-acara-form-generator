@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ImageIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -9,11 +9,20 @@ import { Button } from "@/components/ui/button";
 type ImageUploadValue =
   | ""
   | {
-      kind: "new-upload";
-      dataUrl: string;
+      kind: "pending";
+      file: File;
+      previewUrl: string;
       fileName: string;
       mimeType: string;
       size: number;
+    }
+  | {
+      kind: "uploaded";
+      storagePath: string;
+      fileName: string;
+      mimeType: string;
+      size: number;
+      previewUrl?: string;
     };
 
 interface FileUploadProps {
@@ -33,10 +42,46 @@ export function FileUpload({
 }: FileUploadProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const localPreviewUrlRef = useRef<string | null>(null);
   const [error, setError] = useState<string>("");
 
+  useEffect(() => {
+    return () => {
+      if (localPreviewUrlRef.current) {
+        URL.revokeObjectURL(localPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const activePendingPreview =
+      typeof value === "object" && value.kind === "pending"
+        ? value.previewUrl
+        : null;
+
+    if (
+      localPreviewUrlRef.current &&
+      localPreviewUrlRef.current !== activePendingPreview
+    ) {
+      URL.revokeObjectURL(localPreviewUrlRef.current);
+      localPreviewUrlRef.current = null;
+    }
+
+    if (activePendingPreview) {
+      localPreviewUrlRef.current = activePendingPreview;
+    }
+  }, [value]);
+
   const previewSrc =
-    typeof value === "string" ? value : (value.dataUrl ?? "");
+    typeof value === "string"
+      ? /^data:|^https?:\/\//.test(value)
+        ? value
+        : ""
+      : value.kind === "pending"
+        ? value.previewUrl
+        : value.kind === "uploaded"
+        ? (value.previewUrl ?? "")
+        : "";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,26 +106,29 @@ export function FileUpload({
 
     setError("");
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const dataUrl = typeof reader.result === "string" ? reader.result : "";
-      if (!dataUrl) {
-        setError("Gagal membaca file gambar.");
-        return;
-      }
+    if (localPreviewUrlRef.current) {
+      URL.revokeObjectURL(localPreviewUrlRef.current);
+    }
 
-      onChange({
-        kind: "new-upload",
-        dataUrl,
-        fileName: file.name,
-        mimeType: file.type,
-        size: file.size,
-      });
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+    localPreviewUrlRef.current = previewUrl;
+
+    onChange({
+      kind: "pending",
+      file,
+      previewUrl,
+      fileName: file.name,
+      mimeType: file.type,
+      size: file.size,
+    });
   };
 
   const handleRemove = () => {
+    if (localPreviewUrlRef.current) {
+      URL.revokeObjectURL(localPreviewUrlRef.current);
+      localPreviewUrlRef.current = null;
+    }
+
     onChange("");
     setError("");
     if (inputRef.current) {
@@ -117,13 +165,20 @@ export function FileUpload({
           </Button>
         </div>
       ) : (
-        <Button variant="outline" className={cn("w-full")} asChild>
+        <Button
+          variant="outline"
+          className={cn("w-full")}
+          asChild
+        >
           <label htmlFor={inputId} className="cursor-pointer">
             <ImageIcon className="mr-2 size-4" />
             {label}
           </label>
         </Button>
       )}
+      {typeof value === "object" && !previewSrc ? (
+        <p className="text-muted-foreground text-sm">{value.fileName}</p>
+      ) : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </div>
   );

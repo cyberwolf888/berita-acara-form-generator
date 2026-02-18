@@ -3,8 +3,6 @@
 import * as React from "react"
 import { toast } from "sonner"
 
-import { getBeritaAcaraPrintData } from "@/lib/actions"
-
 import { triggerBlobDownload } from "./logic"
 import { type ReportActionHandler, type ReportRow } from "./types"
 
@@ -26,12 +24,6 @@ export function useReportActions({ onEdit, onDelete }: UseReportActionsOptions) 
       const toastId = toast.loading("Menyiapkan dokumen...")
 
       try {
-        const result = await getBeritaAcaraPrintData(row.id)
-
-        if (!result.success) {
-          throw new Error(result.error)
-        }
-
         const response = await fetch("/api/docx", {
           method: "POST",
           headers: {
@@ -39,7 +31,7 @@ export function useReportActions({ onEdit, onDelete }: UseReportActionsOptions) 
           },
           body: JSON.stringify({
             template: "berita-acara.docx",
-            data: result.data,
+            id: row.id,
           }),
         })
 
@@ -52,7 +44,7 @@ export function useReportActions({ onEdit, onDelete }: UseReportActionsOptions) 
         }
 
         const blob = await response.blob()
-        triggerBlobDownload(blob, result.data.full_name || row.full_name)
+        triggerBlobDownload(blob, row.full_name)
 
         toast.success("Dokumen berhasil dibuat.", {
           id: toastId,

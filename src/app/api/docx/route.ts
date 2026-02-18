@@ -1,4 +1,5 @@
 import { generateDocxReport } from "@/lib/docx";
+import { getBeritaAcaraPrintData } from "@/lib/actions/get-berita-acara-print-data";
 import path from "node:path";
 
 export const runtime = "nodejs";
@@ -10,18 +11,27 @@ function sanitizeFileName(value: string) {
 export async function POST(request: Request) {
   try {
     const payload = await request.json().catch(() => ({}));
-    const data =
-      payload && typeof payload === "object" && "data" in payload
-        ? (payload.data as Record<string, unknown>)
-        : {};
+    const id =
+      payload && typeof payload === "object" && "id" in payload
+        ? String(payload.id)
+        : "";
+
+    if (!id.trim()) {
+      throw new Error("ID dokumen wajib diisi.");
+    }
 
     const templateFile =
       payload && typeof payload === "object" && "template" in payload
         ? String(payload.template)
         : undefined;
 
+    const printData = await getBeritaAcaraPrintData(id);
+    if (!printData.success) {
+      throw new Error(printData.error);
+    }
+
     const { buffer, fileName } = await generateDocxReport({
-      data,
+      data: printData.data,
       templateFile,
     });
 

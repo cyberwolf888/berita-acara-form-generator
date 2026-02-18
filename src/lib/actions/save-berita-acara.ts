@@ -1,6 +1,6 @@
 "use server";
 
-import { bucket, db } from "@/lib/firebase-admin";
+import { db } from "@/lib/firebase-admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 import { uploadImageToStorage } from "./helpers";
@@ -8,8 +8,6 @@ import { uploadImageToStorage } from "./helpers";
 export async function saveBeritaAcara(
   data: Record<string, unknown>
 ): Promise<{ success: true; id: string } | { success: false; error: string }> {
-  const uploadedPaths: string[] = [];
-
   try {
     // Deep-clone to strip any proxy / non-plain wrappers that Next.js
     // server-action serialisation may introduce.
@@ -60,9 +58,7 @@ export async function saveBeritaAcara(
             ...record,
             foto: await uploadImageToStorage(
               record.foto,
-              `pengukuran_dihadiri[${index}].foto`,
-              docRef.id,
-              uploadedPaths
+              `pengukuran_dihadiri[${index}].foto`
             ),
           };
         })
@@ -81,9 +77,7 @@ export async function saveBeritaAcara(
             ...record,
             foto: await uploadImageToStorage(
               record.foto,
-              `batas_bidang_tanah[${index}].foto`,
-              docRef.id,
-              uploadedPaths
+              `batas_bidang_tanah[${index}].foto`
             ),
           };
         })
@@ -102,9 +96,7 @@ export async function saveBeritaAcara(
             ...record,
             ttd: await uploadImageToStorage(
               record.ttd,
-              `daftar_petugas[${index}].ttd`,
-              docRef.id,
-              uploadedPaths
+              `daftar_petugas[${index}].ttd`
             ),
           };
         })
@@ -113,9 +105,7 @@ export async function saveBeritaAcara(
 
     converted.gambar_denah_area = await uploadImageToStorage(
       converted.gambar_denah_area,
-      "gambar_denah_area",
-      docRef.id,
-      uploadedPaths
+      "gambar_denah_area"
     );
 
     await docRef.set({
@@ -126,14 +116,6 @@ export async function saveBeritaAcara(
 
     return { success: true, id: docRef.id };
   } catch (err) {
-    if (uploadedPaths.length > 0) {
-      await Promise.allSettled(
-        uploadedPaths.map(async (pathValue) => {
-          await bucket.file(pathValue).delete({ ignoreNotFound: true });
-        })
-      );
-    }
-
     const message = err instanceof Error ? err.message : "Unknown error";
     return { success: false, error: message };
   }

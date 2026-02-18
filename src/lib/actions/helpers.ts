@@ -1,6 +1,5 @@
 import { bucket, storageBucketName } from "@/lib/firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
-import { randomUUID } from "node:crypto";
 
 import type {
   BatasBidangTanahPrintItem,
@@ -10,12 +9,10 @@ import type {
 } from "./types";
 
 import {
-  DEFAULT_STORAGE_IMAGES_PREFIX,
   DOCX_FALLBACK_IMAGE_BASE64,
   DOCX_IMAGE_DIMENSION_CM,
   DOCX_MIME_TO_EXTENSION,
   EXTENSION_TO_DOCX,
-  MAX_UPLOAD_IMAGE_SIZE_BYTES,
   longDateFormatter,
   monthNameFormatter,
   numericDateFormatter,
@@ -272,21 +269,6 @@ export async function normalizeDocxImage(value: unknown): Promise<DocxTemplateIm
 // Upload helpers
 // ---------------------------------------------------------------------------
 
-function getBase64DecodedSize(base64: string) {
-  const normalized = base64.replace(/\s+/g, "");
-  if (!normalized) {
-    return 0;
-  }
-
-  const padding = normalized.endsWith("==")
-    ? 2
-    : normalized.endsWith("=")
-      ? 1
-      : 0;
-
-  return (normalized.length * 3) / 4 - padding;
-}
-
 function parseIncomingImageValue(value: unknown, fieldPath: string) {
   if (value === null || value === undefined || value === "") {
     return null;
@@ -298,51 +280,16 @@ function parseIncomingImageValue(value: unknown, fieldPath: string) {
       return null;
     }
 
-    const parsedDataUrl = parseImageDataUrl(raw);
-    if (parsedDataUrl) {
-      const decodedSize = getBase64DecodedSize(parsedDataUrl.base64Payload);
-      if (decodedSize > MAX_UPLOAD_IMAGE_SIZE_BYTES) {
-        throw new Error(`${fieldPath} melebihi ukuran maksimum 10 MB.`);
-      }
-
-      return {
-        mode: "upload" as const,
-        base64Payload: parsedDataUrl.base64Payload,
-        mimeType: parsedDataUrl.mimeType,
-      };
-    }
-
     const normalizedPath = normalizeStorageObjectPath(raw);
     if (normalizedPath) {
-      return {
-        mode: "path" as const,
-        storagePath: normalizedPath,
-      };
+      return normalizedPath;
     }
 
-    throw new Error(`${fieldPath} harus berupa data gambar atau path Storage yang valid.`);
+    throw new Error(`${fieldPath} harus berupa path Storage yang valid.`);
   }
 
   if (value && typeof value === "object") {
     const record = value as Record<string, unknown>;
-    if (record.kind === "new-upload") {
-      const dataUrl = asText(record.dataUrl).trim();
-      const parsedDataUrl = parseImageDataUrl(dataUrl);
-      if (!parsedDataUrl) {
-        throw new Error(`${fieldPath} harus berupa file gambar yang valid.`);
-      }
-
-      const decodedSize = getBase64DecodedSize(parsedDataUrl.base64Payload);
-      if (!Number.isFinite(decodedSize) || decodedSize > MAX_UPLOAD_IMAGE_SIZE_BYTES) {
-        throw new Error(`${fieldPath} melebihi ukuran maksimum 10 MB.`);
-      }
-
-      return {
-        mode: "upload" as const,
-        base64Payload: parsedDataUrl.base64Payload,
-        mimeType: parsedDataUrl.mimeType,
-      };
-    }
 
     const storagePath = asText(record.storagePath).trim();
     if (storagePath) {
@@ -351,65 +298,27 @@ function parseIncomingImageValue(value: unknown, fieldPath: string) {
         throw new Error(`${fieldPath} memiliki path Storage yang tidak valid.`);
       }
 
-      return {
-        mode: "path" as const,
-        storagePath: normalizedPath,
-      };
+      return normalizedPath;
+    }
+
+    if (record.kind === "uploading") {
+      throw new Error(`${fieldPath} masih dalam proses upload.`);
     }
   }
 
   throw new Error(`${fieldPath} memiliki format gambar yang tidak didukung.`);
 }
 
-function toStorageSafeSegment(value: string) {
-  return value
-    .replace(/[^a-zA-Z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .toLowerCase();
-}
-
-function getImagesPrefix() {
-  return (
-    process.env.FIREBASE_STORAGE_IMAGES_PREFIX?.trim().replace(/^\/+|\/+$/g, "") ||
-    DEFAULT_STORAGE_IMAGES_PREFIX
-  );
-}
-
 export async function uploadImageToStorage(
   value: unknown,
-  fieldPath: string,
-  documentId: string,
-  uploadedPaths: string[]
+  fieldPath: string
 ) {
   const parsed = parseIncomingImageValue(value, fieldPath);
   if (!parsed) {
     return "";
   }
 
-  if (parsed.mode === "path") {
-    return parsed.storagePath;
-  }
-
-  const extension = DOCX_MIME_TO_EXTENSION[parsed.mimeType];
-  if (!extension) {
-    throw new Error(`${fieldPath} hanya menerima format PNG/JPG/JPEG/GIF.`);
-  }
-
-  const imagesPrefix = getImagesPrefix();
-  const safeFieldPath = toStorageSafeSegment(fieldPath) || "image";
-  const objectPath = `${imagesPrefix}/${documentId}/${safeFieldPath}-${randomUUID()}${extension}`;
-
-  const buffer = Buffer.from(parsed.base64Payload, "base64");
-  await bucket.file(objectPath).save(buffer, {
-    resumable: false,
-    contentType: parsed.mimeType,
-    metadata: {
-      cacheControl: "private, max-age=0, no-transform",
-    },
-  });
-
-  uploadedPaths.push(objectPath);
-  return objectPath;
+  return parsed;
 }
 
 // ---------------------------------------------------------------------------
