@@ -21,7 +21,7 @@ export function ArrayRowShell({
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
         {canRemove ? (
-          <Button type="button" variant="ghost" size="icon-xs" onClick={onRemove}>
+          <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
             <Trash2Icon className="size-4 text-destructive" />
           </Button>
         ) : null}

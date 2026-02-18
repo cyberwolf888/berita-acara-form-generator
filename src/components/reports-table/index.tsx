@@ -1,5 +1,7 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 import { useReportActions } from "./use-report-actions"
 import { useReportsTable } from "./use-reports-table"
 import { ReportsTableView } from "./reports-table-view"
@@ -16,6 +18,8 @@ function noopAction() {
 }
 
 export default function ReportsTable({ rows, onEdit, onDelete }: ReportsTableProps) {
+  const router = useRouter()
+
   const { query, setQuery, sortKey, sortDirection, sortedRows, handleSort } =
     useReportsTable(rows)
 
@@ -27,6 +31,10 @@ export default function ReportsTable({ rows, onEdit, onDelete }: ReportsTablePro
     canEdit,
     canDelete,
   } = useReportActions({ onEdit, onDelete })
+
+  const handleRowClick = (row: ReportRow) => {
+    router.push(`/reports/${row.id}`)
+  }
 
   return (
     <ReportsTableView
@@ -43,6 +51,7 @@ export default function ReportsTable({ rows, onEdit, onDelete }: ReportsTablePro
       onPrint={handlePrint}
       onEdit={canEdit ? handleEdit : noopAction}
       onDelete={canDelete ? handleDelete : noopAction}
+      onRowClick={handleRowClick}
     />
   )
 }

@@ -28,16 +28,16 @@ export function CreateBeritaAcaraFormView({
 }: CreateBeritaAcaraFormViewProps) {
   return (
     <Card>
-      <CardHeader className="space-y-3">
-        <div className="flex items-center gap-3">
+      <CardHeader className="!px-4 sm:!px-6">
+        <div className="flex items-center gap-2">
           <Button type="button" variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeftIcon className="mr-1 h-4 w-4" />
             Kembali
           </Button>
-          <CardTitle className="text-2xl">Buat Berita Acara</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Buat Berita Acara</CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="!px-4 sm:!px-6">
         <form
           onSubmit={(e) => {
             e.preventDefault();

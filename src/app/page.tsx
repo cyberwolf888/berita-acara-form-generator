@@ -85,7 +85,7 @@ export default async function Home() {
             </CardDescription>
             <CardAction />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-2 sm:px-6">
             <ReportsTable rows={rows} />
           </CardContent>
         </Card>

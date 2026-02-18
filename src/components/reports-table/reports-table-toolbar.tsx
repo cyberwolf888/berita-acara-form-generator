@@ -22,9 +22,9 @@ export function ReportsTableToolbar({
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder={SEARCH_PLACEHOLDER}
-          className="sm:w-72"
+          className="flex-1 min-w-0 sm:w-72 sm:flex-none"
         />
-        <span className="text-muted-foreground text-sm">{resultCount} laporan</span>
+        <span className="text-muted-foreground shrink-0 whitespace-nowrap text-sm">{resultCount} laporan</span>
       </div>
     </div>
   )

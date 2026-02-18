@@ -4,7 +4,7 @@ import { columns, EMPTY_STATE_TEXT } from "./constants"
 import { formatDate } from "./logic"
 import { ReportRowActions } from "./report-row-actions"
 import { ReportsTableToolbar } from "./reports-table-toolbar"
-import { type ReportActionHandler, type ReportRow, type SortDirection, type SortKey } from "./types"
+import { type ReportActionHandler, type ReportColumn, type ReportRow, type SortDirection, type SortKey } from "./types"
 
 import {
   Table,
@@ -15,6 +15,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+
+function getColumnClassName(col: ReportColumn): string | undefined {
+  if (col.hiddenBelow === "md") return cn(col.className, "hidden md:table-cell")
+  if (col.hiddenBelow === "sm") return cn(col.className, "hidden sm:table-cell")
+  return col.className
+}
 
 type ReportsTableViewProps = {
   rows: ReportRow[]
@@ -30,6 +36,7 @@ type ReportsTableViewProps = {
   onPrint: ReportActionHandler
   onEdit: ReportActionHandler
   onDelete: ReportActionHandler
+  onRowClick?: (row: ReportRow) => void
 }
 
 export function ReportsTableView({
@@ -46,6 +53,7 @@ export function ReportsTableView({
   onPrint,
   onEdit,
   onDelete,
+  onRowClick,
 }: ReportsTableViewProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -58,6 +66,9 @@ export function ReportsTableView({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="md:hidden w-10">
+              <span className="sr-only">Aksi</span>
+            </TableHead>
             {columns.map((column) => {
               const isActive = sortKey === column.key
               const sortLabel =
@@ -71,7 +82,7 @@ export function ReportsTableView({
               return (
                 <TableHead
                   key={column.key}
-                  className={column.className}
+                  className={getColumnClassName(column)}
                   aria-sort={ariaSort}
                 >
                   <button
@@ -95,7 +106,7 @@ export function ReportsTableView({
                 </TableHead>
               )
             })}
-            <TableHead className="w-[60px]">
+            <TableHead className="hidden md:table-cell w-[60px]">
               <span className="sr-only">Aksi</span>
             </TableHead>
           </TableRow>
@@ -103,7 +114,7 @@ export function ReportsTableView({
         <TableBody>
           {rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-muted-foreground text-center">
+              <TableCell colSpan={columns.length + 2} className="text-muted-foreground text-center">
                 {EMPTY_STATE_TEXT}
               </TableCell>
             </TableRow>
@@ -112,12 +123,28 @@ export function ReportsTableView({
               const isPrinting = printingRowId === row.id
 
               return (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  onClick={() => onRowClick?.(row)}
+                  className={cn(onRowClick && "cursor-pointer")}
+                >
+                  <TableCell className="md:hidden p-2" onClick={(e) => e.stopPropagation()}>
+                    <ReportRowActions
+                      row={row}
+                      isPrinting={isPrinting}
+                      canEdit={canEdit}
+                      canDelete={canDelete}
+                      align="start"
+                      onPrint={onPrint}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{formatDate(row.ba_date)}</TableCell>
                   <TableCell>{row.full_name ?? "—"}</TableCell>
-                  <TableCell>{row.no_license ?? "—"}</TableCell>
-                  <TableCell>{row.desa ?? "—"}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">{row.no_license ?? "—"}</TableCell>
+                  <TableCell className="hidden md:table-cell">{row.desa ?? "—"}</TableCell>
+                  <TableCell className="hidden md:table-cell" onClick={(e) => e.stopPropagation()}>
                     <ReportRowActions
                       row={row}
                       isPrinting={isPrinting}

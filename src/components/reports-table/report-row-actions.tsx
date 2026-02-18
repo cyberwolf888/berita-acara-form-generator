@@ -19,6 +19,7 @@ type ReportRowActionsProps = {
   isPrinting: boolean
   canEdit: boolean
   canDelete: boolean
+  align?: "start" | "end" | "center"
   onPrint: ReportActionHandler
   onEdit: ReportActionHandler
   onDelete: ReportActionHandler
@@ -29,6 +30,7 @@ export function ReportRowActions({
   isPrinting,
   canEdit,
   canDelete,
+  align = "end",
   onPrint,
   onEdit,
   onDelete,
@@ -54,15 +56,15 @@ export function ReportRowActions({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          size="icon-xs"
-          className="text-muted-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+          size="icon-sm"
+          className="size-9 md:size-8 text-muted-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
           disabled={isPrinting}
         >
           <EllipsisVertical />
           <span className="sr-only">Aksi untuk {actionLabel}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align={align} className="w-40">
         <DropdownMenuItem disabled={isPrinting} onClick={handlePrint}>
           {isPrinting ? <Loader2 className="animate-spin" /> : <Printer />}
           {isPrinting ? "Mencetak..." : "Print"}

@@ -18,4 +18,5 @@ export type ReportColumn = {
   key: SortKey
   label: string
   className?: string
+  hiddenBelow?: "sm" | "md"
 }

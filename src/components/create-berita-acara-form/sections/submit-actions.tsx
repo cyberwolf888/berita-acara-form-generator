@@ -9,13 +9,13 @@ type SubmitActionsProps = {
 
 export function SubmitActions({ form, onBack }: SubmitActionsProps) {
   return (
-    <div className="flex justify-end gap-3 pt-4">
-      <Button type="button" variant="outline" onClick={onBack}>
+    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+      <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onBack}>
         Kembali
       </Button>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <Button type="submit" disabled={!canSubmit || isSubmitting}>
+          <Button type="submit" className="w-full sm:w-auto" disabled={!canSubmit || isSubmitting}>
             {isSubmitting ? "Menyimpan..." : "Simpan"}
           </Button>
         )}

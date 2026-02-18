@@ -147,7 +147,7 @@ export function FileUpload({
         className="sr-only"
       />
       {previewSrc ? (
-        <div className="relative inline-block">
+        <div className="space-y-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewSrc}
@@ -157,11 +157,12 @@ export function FileUpload({
           <Button
             type="button"
             variant="destructive"
-            size="icon-xs"
-            className="absolute -top-2 -right-2"
+            size="sm"
+            className="w-full"
             onClick={handleRemove}
           >
-            <XIcon className="size-3" />
+            <XIcon className="mr-1 size-4" />
+            Hapus
           </Button>
         </div>
       ) : (
