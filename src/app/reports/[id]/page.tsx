@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { getBeritaAcaraDetail } from "@/lib/actions"
 
 import { DetailActions } from "./_components/detail-actions"
+import { ZoomableImage } from "./_components/zoomable-image"
 
 export const dynamic = "force-dynamic"
 
@@ -49,18 +50,6 @@ function SectionCard({
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
-  )
-}
-
-function Thumbnail({ src, alt }: { src: string; alt: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className="mt-1 h-20 w-20 rounded-md border object-contain bg-muted"
-    />
   )
 }
 
@@ -172,11 +161,10 @@ export default async function BeritaAcaraDetailPage({
         {/* Gambar Denah Area */}
         {d.gambar_denah_area && (
           <SectionCard title="Gambar Denah Area">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <ZoomableImage
               src={d.gambar_denah_area}
               alt="Gambar denah area"
-              className="rounded-md border object-contain w-full max-h-80 bg-muted"
+              imgClassName="rounded-md border object-contain w-full max-h-80 bg-muted"
             />
           </SectionCard>
         )}
@@ -193,7 +181,11 @@ export default async function BeritaAcaraDetailPage({
                     </span>
                     <span className="text-sm break-words">{item.nama || "—"}</span>
                   </div>
-                  <Thumbnail src={item.foto} alt={`Foto ${item.nama}`} />
+                  <ZoomableImage
+                    src={item.foto}
+                    alt={`Foto ${item.nama}`}
+                    imgClassName="mt-1 h-20 w-20 rounded-md border object-contain bg-muted"
+                  />
                 </li>
               ))}
             </ul>
@@ -211,9 +203,10 @@ export default async function BeritaAcaraDetailPage({
                     <Field label="Jenis" value={item.jenis} />
                     <Field label="Keterangan" value={item.keterangan} />
                   </dl>
-                  <Thumbnail
+                  <ZoomableImage
                     src={item.foto}
                     alt={`Foto batas ${item.jenis}`}
+                    imgClassName="mt-1 h-20 w-20 rounded-md border object-contain bg-muted"
                   />
                   {i < d.batas_bidang_tanah.length - 1 && (
                     <Separator className="mt-1" />
@@ -274,9 +267,10 @@ export default async function BeritaAcaraDetailPage({
                       <dt className="text-xs text-muted-foreground">
                         Tanda Tangan
                       </dt>
-                      <Thumbnail
+                      <ZoomableImage
                         src={item.ttd}
                         alt={`TTD ${item.nama}`}
+                        imgClassName="mt-1 h-20 w-20 rounded-md border object-contain bg-muted"
                       />
                     </div>
                   )}
