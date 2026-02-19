@@ -23,7 +23,10 @@ export const longDateFormatter = new Intl.DateTimeFormat("id-ID", {
 export const DOCX_FALLBACK_IMAGE_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO2Yw0YAAAAASUVORK5CYII=";
 
-export const DOCX_IMAGE_DIMENSION_CM = 2;
+export const DOCX_IMAGE_DIMENSION_CM = 7;
+export const DOCX_SIGNATURE_IMAGE_DIMENSION_CM = 2;
+export const DOCX_DENAH_IMAGE_WIDTH_CM = 14;
+export const DOCX_DENAH_IMAGE_HEIGHT_CM = 10;
 export const DEFAULT_STORAGE_IMAGES_PREFIX = "images";
 
 export const DOCX_MIME_TO_EXTENSION: Record<string, DocxTemplateImage["extension"]> =

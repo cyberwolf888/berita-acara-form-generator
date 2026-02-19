@@ -43,7 +43,7 @@ export function useCreateBeritaAcaraForm() {
 
       if (result.success) {
         toast.success("Berita acara berhasil disimpan!");
-        form.reset();
+        router.push(`/reports/${result.id}`);
         return;
       }
 

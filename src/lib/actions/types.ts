@@ -26,6 +26,20 @@ export type DaftarPetugasPrintItem = {
   ttd: DocxTemplateImage;
 };
 
+export type PenggunaanTanahPrintItem = {
+  no: string;
+  no_hak: string;
+  penggunaan: string;
+};
+
+export type TanahTerdampakPrintItem = {
+  no: string;
+  nib: string;
+  luas_sebelum: string;
+  luas_sesudah: string;
+  keterangan: string;
+};
+
 // ---------------------------------------------------------------------------
 // Detail page types (signed-URL based, no base64 images)
 // ---------------------------------------------------------------------------
@@ -119,8 +133,13 @@ export type BeritaAcaraPrintData = {
   dasar_gambar_ukur: string;
   dasar_surat_ukur: string;
 
+  tempat_dibuat: string;
+  tanggal_dibuat: string;
+
   pengukuran_dihadiri: PengukuranDihadiriPrintItem[];
   batas_bidang_tanah: BatasBidangTanahPrintItem[];
+  penggunaan_tanah: PenggunaanTanahPrintItem[];
+  tanah_terdampak: TanahTerdampakPrintItem[];
   daftar_petugas: DaftarPetugasPrintItem[];
   gambar_denah_area: DocxTemplateImage;
 };

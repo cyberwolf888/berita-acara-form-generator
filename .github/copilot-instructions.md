@@ -47,3 +47,4 @@
 - If no skill clearly matches, proceed with standard project instructions and conventions.
 - If the task is Next.js or App Router related, load `nextjs-developer`; if advanced TypeScript types are required, load `typescript-pro`.
 - For bug fixes or errors, also consider loading `debugging-expert` to assist with troubleshooting and root cause analysis.
+- For design or UI-related tasks, consider loading `frontend-design` to ensure adherence to design principles and user experience best practices.

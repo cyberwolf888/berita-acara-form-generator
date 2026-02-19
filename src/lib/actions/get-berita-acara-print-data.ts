@@ -3,6 +3,7 @@
 import { db } from "@/lib/firebase-admin";
 
 import type { BeritaAcaraPrintData } from "./types";
+import { DOCX_DENAH_IMAGE_HEIGHT_CM, DOCX_DENAH_IMAGE_WIDTH_CM } from "./constants";
 import {
   asText,
   buildDocxDatePayload,
@@ -10,7 +11,9 @@ import {
   normalizeBatasBidangTanah,
   normalizeDaftarPetugas,
   normalizeDocxImage,
+  normalizePenggunaanTanah,
   normalizePengukuranDihadiri,
+  normalizeTanahTerdampak,
 } from "./helpers";
 
 export async function getBeritaAcaraPrintData(
@@ -44,8 +47,15 @@ export async function getBeritaAcaraPrintData(
         normalizePengukuranDihadiri(data.pengukuran_dihadiri),
         normalizeBatasBidangTanah(data.batas_bidang_tanah),
         normalizeDaftarPetugas(data.daftar_petugas),
-        normalizeDocxImage(data.gambar_denah_area),
+        normalizeDocxImage(
+          data.gambar_denah_area,
+          DOCX_DENAH_IMAGE_WIDTH_CM,
+          DOCX_DENAH_IMAGE_HEIGHT_CM
+        ),
       ]);
+
+    const penggunaanTanah = normalizePenggunaanTanah(data.penggunaan_tanah);
+    const tanahTerdampak = normalizeTanahTerdampak(data.tanah_terdampak);
 
     return {
       success: true,
@@ -72,8 +82,13 @@ export async function getBeritaAcaraPrintData(
         dasar_gambar_ukur: asText(data.dasar_gambar_ukur),
         dasar_surat_ukur: asText(data.dasar_surat_ukur),
 
+        tempat_dibuat: asText(data.tempat_dibuat),
+        tanggal_dibuat: formatLongDate(data.tanggal_dibuat),
+
         pengukuran_dihadiri: pengukuranDihadiri,
         batas_bidang_tanah: batasBidangTanah,
+        penggunaan_tanah: penggunaanTanah,
+        tanah_terdampak: tanahTerdampak,
         daftar_petugas: daftarPetugas,
         gambar_denah_area: gambarDenahArea,
       },
